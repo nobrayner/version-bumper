@@ -62,6 +62,7 @@ async function run() {
     }
 
     if (noCurrentVersion) {
+      core.warning('Unable to find the current version. Using the default version')
       currentVersion = defaultVersion
     }
 
@@ -76,7 +77,10 @@ async function run() {
       if (buildNumber) {
         newVersion += `+${buildNumber}`
       }
+
+      core.info(`New Version: ${newVersion}`)
     } else {
+      core.info('The current version has already been manually bumped. There is no new version')
       newVersion = `v${currentVersion}`
     }
 
