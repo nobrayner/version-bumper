@@ -42,7 +42,12 @@ async function run() {
     await git('fetch --all --tags')
 
     // Get latest version tag from prodBranch as 'releasedVersion'
-    let releasedVersion = await git(`describe --tags --abbrev=0 ${branch}`)
+    let latestTag = await git(`describe --tags --abbrev=0 ${branch}`)
+    let releasedVersion = semver.clean(latestTag)
+
+    if (!releasedVersion) {
+      throw Error(`Unable to retrieve the latest release version: Found "${latestTag}" instead`)
+    }
 
     // Read version file, and semver.clean it as 'currentVersion'
     // If it doesn't exist, use defaultVersion
