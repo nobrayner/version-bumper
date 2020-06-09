@@ -3,8 +3,7 @@ const exec = require('@actions/exec')
 const fs = require('fs')
 const semver = require('semver')
 
-const { GITHUB_REPOSITORY, GITHUB_REF } = process.env
-const currentBranch = GITHUB_REF.replace('refs/heads/', '')
+const { GITHUB_REPOSITORY } = process.env
 
 async function run() {
   try {
@@ -33,17 +32,17 @@ async function run() {
     }
 
     // Set up git config
-    // await gitConfig('user.name', 'Version Bumper')
-    // await gitConfig('user.email', 'version.bumper@github.com')
+    await gitConfig('user.name', 'Version Bumper')
+    await gitConfig('user.email', 'version.bumper@github.com')
 
     // // Set origin
-    // await git(`remote set-url origin https://x-access-token:${githubToken}@github.com/${GITHUB_REPOSITORY}.git`)
+    await git(`remote set-url origin https://x-access-token:${githubToken}@github.com/${GITHUB_REPOSITORY}.git`)
 
     // // Get all tags
-    // await git('fetch --all --tags')
+    await git('fetch --all --tags')
 
     // // Get latest version tag from prodBranch as 'releasedVersion'
-    // let releasedVersion = await git(`describe --tags --abbrev=0 ${branch}`)
+    let releasedVersion = await git(`describe --tags --abbrev=0 ${branch}`)
 
     // // Read version file, and semver.clean it as 'currentVersion'
     // // If it doesn't exist, use defaultVersion
@@ -90,32 +89,32 @@ async function run() {
 
 run()
 
-// function git(command) {
-//   return new Promise(async (resolve, reject) => {
-//     let output = ''
-//     let error = ''
+function git(command) {
+  return new Promise(async (resolve, reject) => {
+    let output = ''
+    let error = ''
 
-//     const options = {
-//       listeners: {
-//         stdout: (data: any) => {
-//           output += data.toString()
-//         },
-//         stderr: (data: any) => {
-//           error += data.toString()
-//         }
-//       }
-//     }
+    const options = {
+      listeners: {
+        stdout: (data) => {
+          output += data.toString()
+        },
+        stderr: (data) => {
+          error += data.toString()
+        }
+      }
+    }
 
-//     try {
-//       await exec.exec(`git ${command}`, undefined, options)
+    try {
+      await exec.exec(`git ${command}`, undefined, options)
 
-//       resolve(output)
-//     } catch (e) {
-//       reject(e)
-//     }
-//   })
-// }
+      resolve(output)
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
 
-// function gitConfig(prop, value) {
-//   return git(`config ${prop} "${value}"`)
-// }
+function gitConfig(prop, value) {
+  return git(`config ${prop} "${value}"`)
+}
