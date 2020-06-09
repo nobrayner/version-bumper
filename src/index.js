@@ -60,10 +60,11 @@ async function run() {
     // If it doesn't exist, use defaultVersion
     let noCurrentVersion = true
 
+    let originalCurrentVersion = ''
     let currentVersion = ''
 
     if (fs.existsSync(versionFile)) {
-      let dirtyVersion = fs.readFileSync(versionFile, 'utf8')
+      originalCurrentVersion = fs.readFileSync(versionFile, 'utf8')
 
       let cleanVersion = semver.clean(dirtyVersion)
 
@@ -101,8 +102,13 @@ async function run() {
       await git(`tag -a ${newVersion} -m "${newVersion}"`)
       await git(`push origin ${currentBranch} --follow-tags`)
     } else {
-      core.info('The current version has already been manually bumped. There is no new version')
-      newVersion = `v${currentVersion}`
+      core.info('There is no new version')
+      
+      if (semver.valid(semver.clean(originalCurrentVersion))) {
+        newVersion = originalCurrentVersion
+      } else {
+        newVersion = defaultVersion
+      }
     }
 
     // Output new version number 
