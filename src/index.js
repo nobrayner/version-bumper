@@ -94,7 +94,8 @@ async function run() {
       // Commit the new version file back to 
       await git('add .')
       await git(`commit -m "Bump version to ${newVersion}"`)
-      await git('push')
+      await git(`tag -a ${newVersion} -m "${newVersion}"`)
+      await git(`push origin ${currentBranch} --follow-tags`)
     } else {
       core.info('The current version has already been manually bumped. There is no new version')
       newVersion = `v${currentVersion}`
