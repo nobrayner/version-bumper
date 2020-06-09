@@ -85,6 +85,14 @@ async function run() {
       }
 
       core.info(`New Version: ${newVersion}`)
+
+      // Write new version back to the version file
+      fs.writeFileSync(versionFile, newVersion)
+
+      // Commit the new version file back to 
+      await git('add .')
+      await git(`commit -m "Bump version to ${newVersion}"`)
+      await git('push')
     } else {
       core.info('The current version has already been manually bumped. There is no new version')
       newVersion = `v${currentVersion}`

@@ -6,25 +6,31 @@ inputs:
   github-token:
     description: 'GitHub Token'
     required: true
+
   version-file:
     description: 'The file (and path) the current version number is stored in'
     required: false
     default: 'version.info'
+    
   branch:
     description: 'The branch to retrieve the last version tag from. Defaults to the current branch'
     required: false
     default: ''
+    
   default-version:
     description: 'The version number to use when the released version cannot be found'
     required: false
     default: '0.0.0'
+
   bump:
     description: 'What to bump: major, minor, patch, premajor, preminor, prepatch, or prerelease. Defaults to patch'
     required: false
     default: 'patch'
+
   prerelease-text:
     description: 'The pre-release text to add to a pre* bump - e.g. "alpha". Only applies to: premajor, preminor, prepatch, or prerelease'
     required: false
+
   build-number:
     description: 'The build to add to the version'
     required: false
