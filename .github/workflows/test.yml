@@ -18,7 +18,7 @@ jobs:
           github-token: ${{ secrets.github_token }}
           bump: prepatch
           prerelease-text: dev
-          build: ${{ github.run_number }}
+          build-number: ${{ github.run_number }}
 
       - name: Check Version Bumper output
         run: echo ${{ steps.version-bump.outputs.version }}
