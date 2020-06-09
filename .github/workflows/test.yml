@@ -15,4 +15,4 @@ jobs:
       - uses: ./
         id: version-bump
         with:
-          github-token: ${{ GITHUB_TOKEN }}
+          github-token: ${{ secrets.github_token }}
