@@ -66,7 +66,7 @@ async function run() {
     if (fs.existsSync(versionFile)) {
       originalCurrentVersion = fs.readFileSync(versionFile, 'utf8')
 
-      let cleanVersion = semver.clean(dirtyVersion)
+      let cleanVersion = semver.clean(originalCurrentVersion)
 
       if (cleanVersion) {
         currentVersion = cleanVersion
