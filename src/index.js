@@ -4,7 +4,7 @@ const fs = require('fs')
 const semver = require('semver')
 
 const { GITHUB_REPOSITORY, GITHUB_REF } = process.env
-const currentBranch = GITHUB_REF?.replace('refs/heads/', '')
+const currentBranch = GITHUB_REF.replace('refs/heads/', '')
 
 async function run() {
   try {
