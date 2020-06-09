@@ -1,0 +1,18 @@
+name: Test Action
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ./
+        id: version-bump
+        with:
+          github-token: ${{ GITHUB_TOKEN }}

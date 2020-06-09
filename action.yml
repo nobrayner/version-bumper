@@ -1,0 +1,38 @@
+name: 'Version Bumper'
+description: 'A GitHub action to manage SemVer versioning in a platform agnostic way'
+author: 'Braydon Hall'
+
+inputs:
+  github-token:
+    description: 'GitHub Token'
+    required: true
+  version-file:
+    description: 'The file (and path) the current version number is stored in'
+    required: false
+    default: 'version.info'
+  branch:
+    description: 'The branch to retrieve the last version tag from'
+    required: false
+    default: 'master'
+  default-version:
+    description: 'The version number to use when the released version cannot be found'
+    required: false
+    default: '0.0.0'
+  bump:
+    description: 'What to bump: major, minor, patch, premajor, preminor, prepatch, or prerelease. Defaults to patch'
+    required: false
+    default: 'patch'
+  prerelease-text:
+    description: 'The pre-release text to add to a pre* bump - e.g. "alpha". Only applies to: premajor, preminor, prepatch, or prerelease'
+    required: false
+  build-number:
+    description: 'The build to add to the version'
+    required: false
+
+outputs:
+  version:
+    description: 'The version post-bump'
+
+runs:
+  using: 'node12'
+  main: 'src/index.js'
