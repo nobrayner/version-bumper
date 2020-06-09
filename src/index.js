@@ -46,7 +46,8 @@ async function run() {
     let releasedVersion = semver.clean(latestTag)
 
     if (!releasedVersion) {
-      throw Error(`Unable to retrieve the latest release version: Found "${latestTag}" instead`)
+      core.warning('Unable to find the latest release version. Using the default version')
+      releasedVersion = defaultVersion
     }
 
     // Read version file, and semver.clean it as 'currentVersion'
