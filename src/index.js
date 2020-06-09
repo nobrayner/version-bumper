@@ -1,7 +1,7 @@
-import core from '@actions/core'
-import exec from '@actions/exec'
-import fs from 'fs'
-import semver from 'semver'
+const core = require('@actions/core')
+const exec = require('@actions/exec')
+const fs = require('fs')
+const semver = require('semver')
 
 const { GITHUB_REPOSITORY, GITHUB_REF } = process.env
 const currentBranch = GITHUB_REF?.replace('refs/heads/', '')
