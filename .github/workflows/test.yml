@@ -1,5 +1,7 @@
 name: Test Action
 
+# Trigger
+
 on:
   push:
     branches: [ master ]
