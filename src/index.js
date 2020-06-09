@@ -35,53 +35,53 @@ async function run() {
     await gitConfig('user.name', 'Version Bumper')
     await gitConfig('user.email', 'version.bumper@github.com')
 
-    // // Set origin
+    // Set origin
     await git(`remote set-url origin https://x-access-token:${githubToken}@github.com/${GITHUB_REPOSITORY}.git`)
 
-    // // Get all tags
+    // Get all tags
     await git('fetch --all --tags')
 
-    // // Get latest version tag from prodBranch as 'releasedVersion'
+    // Get latest version tag from prodBranch as 'releasedVersion'
     let releasedVersion = await git(`describe --tags --abbrev=0 ${branch}`)
 
-    // // Read version file, and semver.clean it as 'currentVersion'
-    // // If it doesn't exist, use defaultVersion
-    // let noCurrentVersion = true
+    // Read version file, and semver.clean it as 'currentVersion'
+    // If it doesn't exist, use defaultVersion
+    let noCurrentVersion = true
 
-    // let currentVersion = ''
+    let currentVersion = ''
 
-    // if (fs.existsSync(versionFile)) {
-    //   let dirtyVersion = fs.readFileSync(versionFile, 'utf8')
+    if (fs.existsSync(versionFile)) {
+      let dirtyVersion = fs.readFileSync(versionFile, 'utf8')
 
-    //   let cleanVersion = semver.clean(dirtyVersion)
+      let cleanVersion = semver.clean(dirtyVersion)
 
-    //   if (cleanVersion) {
-    //     currentVersion = cleanVersion
-    //     noCurrentVersion = false
-    //   }
-    // }
+      if (cleanVersion) {
+        currentVersion = cleanVersion
+        noCurrentVersion = false
+      }
+    }
 
-    // if (noCurrentVersion) {
-    //   currentVersion = defaultVersion
-    // }
+    if (noCurrentVersion) {
+      currentVersion = defaultVersion
+    }
 
-    // // If currentVersion <= releasedVersion
-    // // Bump version using semver package: bump, prereleaseText (if applicable)
-    // // Append buildNumber
-    // let newVersion = 'v'
+    // If currentVersion <= releasedVersion
+    // Bump version using semver package: bump, prereleaseText (if applicable)
+    // Append buildNumber
+    let newVersion = 'v'
 
-    // if (semver.lte(currentVersion, releasedVersion)) {
-    //   newVersion += semver.inc(currentVersion, bump, prereleaseText)
+    if (semver.lte(currentVersion, releasedVersion)) {
+      newVersion += semver.inc(currentVersion, bump, prereleaseText)
       
-    //   if (buildNumber) {
-    //     newVersion += `+${buildNumber}`
-    //   }
-    // } else {
-    //   newVersion = `v${currentVersion}`
-    // }
+      if (buildNumber) {
+        newVersion += `+${buildNumber}`
+      }
+    } else {
+      newVersion = `v${currentVersion}`
+    }
 
-    // // Output new version number 
-    // core.setOutput('version', newVersion)
+    // Output new version number 
+    core.setOutput('version', newVersion)
   } catch (error) {
     core.setFailed(error.message)
   }
