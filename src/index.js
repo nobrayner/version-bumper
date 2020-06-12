@@ -19,9 +19,12 @@ async function run() {
     const prereleaseText = core.getInput('prerelease-text')
     const buildNumber = core.getInput('build-number')
 
+    if (!branch) {
+      branch = currentBranch
+    }
     
     core.info(`Using "${versionFile}" as the version file`)
-    core.info(`Using "${branch}" as the production branch`)
+    core.info(`Using "${branch}" as production branch`)
     core.info(`Using "${defaultVersion}" as the default version`)
     core.info(`Using "${bump}" as bump`)
 
