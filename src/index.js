@@ -99,6 +99,8 @@ async function run() {
       if (semver.valid(semver.clean(originalCurrentVersion))) {
         var semverObj = semver.parse(originalCurrentVersion)
 
+        core.debug(semverObj.build)
+
         if (buildNumber && !semverObj.build) {
           core.info('Updating build number')
           newVersion = semver.clean(originalCurrentVersion) + `+${buildNumber}`
