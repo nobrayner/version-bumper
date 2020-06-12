@@ -12,16 +12,18 @@ async function run() {
     core.setSecret(githubToken)
 
     const versionFile = core.getInput('version-file')
-    const branch = core.getInput('branch')
+    const inputBranch = core.getInput('branch')
     const defaultVersion = core.getInput('default-version')
     const bump = core.getInput('bump')
     const isPreBump = /pre(major|minor|patch|release)/.test(bump)
     const prereleaseText = core.getInput('prerelease-text')
     const buildNumber = core.getInput('build-number')
 
-    if (!branch) {
-      branch = currentBranch
+    let useBranch = inputBranch
+    if (!useBranch) {
+      useBranch = currentBranch
     }
+    const branch = useBranch
     
     core.info(`Using "${versionFile}" as the version file`)
     core.info(`Using "${branch}" as production branch`)
