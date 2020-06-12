@@ -32,15 +32,10 @@ async function run() {
       core.info(`Using "${buildNumber}" as the build number`)
     }
 
-    // Set up git config
-    await gitConfig('user.name', 'Version Bumper')
-    await gitConfig('user.email', 'version.bumper@github.com')
-
     // Set origin
     await git(`remote set-url origin https://x-access-token:${githubToken}@github.com/${GITHUB_REPOSITORY}.git`)
 
     // Get all tags
-    await git(`checkout ${currentBranch}`)
     await git('fetch --all --tags')
 
     // Get latest version tag from prodBranch as 'releasedVersion'
@@ -77,6 +72,7 @@ async function run() {
     if (noCurrentVersion) {
       core.warning('Unable to find the current version. Using the default version')
       currentVersion = defaultVersion
+      originalCurrentVersion = 'v' + defaultVersion
     }
 
     // If currentVersion <= releasedVersion
@@ -92,22 +88,11 @@ async function run() {
       }
 
       core.info(`New Version: ${newVersion}`)
-
-      // Write new version back to the version file
-      fs.writeFileSync(versionFile, newVersion)
-
-      // Commit the new version file back to 
-      await git('add .')
-      await git(`commit -m "Bump version to ${newVersion}"`)
-      await git(`tag -a ${newVersion} -m "${newVersion}"`)
-      await git(`push origin ${currentBranch} --follow-tags`)
     } else {
       core.info('There is no new version')
       
       if (semver.valid(semver.clean(originalCurrentVersion))) {
         newVersion = originalCurrentVersion
-      } else {
-        newVersion = defaultVersion
       }
     }
 
@@ -144,8 +129,4 @@ function git(command) {
       reject(e)
     }
   })
-}
-
-function gitConfig(prop, value) {
-  return git(`config ${prop} "${value}"`)
 }
