@@ -12,7 +12,11 @@ module.exports = new (class Git {
     this.setOrigin(`https://x-access-token:${githubToken}@github.com/${GITHUB_REPOSITORY}.git`)
 
     this.checkout()
+
+    this.isShallow = (this.revParse(['--is-shallow-repository']) === 'true')
   }
+
+  isShallow = false
 
   exec = (command) => new Promise(async(resolve, reject) => {
     let output = ''
@@ -34,7 +38,14 @@ module.exports = new (class Git {
     }
   })
 
-  fetchTags = () => this.exec(`fetch --all --tags --unshallow`)
+  revParse = (args) => this.exec(`rev-parse ${args.join(' ')}`)
+
+  pull = () => {
+    let unshallow = (isShallow ? '' : ' --unshallow')
+    this.exec(`pull${unshallow}`)
+  }
+
+  fetchTags = () => this.exec(`fetch --all --tags`)
 
   describeTags = (commitish) => this.exec(`describe --tags --abbrev=0 ${commitish}`)
 
