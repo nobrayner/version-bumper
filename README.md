@@ -60,11 +60,12 @@ Update version.info, npm front-end, and backend file and commit
 
 - name: Version Bumper
   id: version-bump
-  uses: nobrayner/version-bumper
+  uses: nobrayner/version-bumper@v1
   with:
     github-token: ${{ secrets.github_token }}
 
 - name: Update Version and Commit
+  if: ${{ steps.version-bump.outputs.new-version }}
   run: |
     echo ${{ steps.version-bump.outputs.version }} > version.info
     cd web-app && npm version --git-tag-version=false ${{ steps.version-bump.outputs.version }}

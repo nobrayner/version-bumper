@@ -38,6 +38,9 @@ outputs:
   version:
     description: 'The version post-bump'
 
+  new-version:
+    description: 'Whether or not a new version was output'
+
 runs:
   using: 'node12'
   main: 'src/index.js'

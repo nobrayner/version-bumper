@@ -84,9 +84,10 @@ async function run() {
     // Bump version using semver package: bump, prereleaseText (if applicable)
     // Append buildNumber
     let newVersion = 'v'
+    let hasNewVersion = true
 
     if (semver.lte(currentVersion, releasedVersion)) {
-      newVersion += semver.inc(currentVersion, bump, prereleaseText)
+      newVersion += semver.inc(releasedVersion, bump, prereleaseText)
       
       if (buildNumber) {
         newVersion += `+${buildNumber}`
@@ -94,8 +95,6 @@ async function run() {
 
       core.info(`New Version: ${newVersion}`)
     } else {
-      core.info('There is no new version')
-      
       if (semver.valid(semver.clean(originalCurrentVersion))) {
         var semverObj = semver.parse(originalCurrentVersion)
 
@@ -103,13 +102,16 @@ async function run() {
           core.info('Updating build number')
           newVersion = semver.clean(originalCurrentVersion) + `+${buildNumber}`
         } else {
+          core.info('There is no new version')
           newVersion = originalCurrentVersion
+          hasNewVersion = false
         }
       }
     }
 
     // Output new version number 
     core.setOutput('version', newVersion)
+    core.setOutput('new-version', hasNewVersion)
   } catch (error) {
     core.setFailed(error.message)
   }
