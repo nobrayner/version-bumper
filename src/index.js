@@ -3,6 +3,9 @@ const fs = require('fs')
 const semver = require('semver')
 const git = requite('./helpers/git')
 
+const { GITHUB_REF } = process.env
+const currentBranch = GITHUB_REF.replace('refs/heads/', '')
+
 async function run() {
   try {
     const versionFile = core.getInput('version-file')
