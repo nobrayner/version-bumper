@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const fs = require('fs')
 const semver = require('semver')
-const git = requite('./helpers/git')
+const git = require('./helpers/git')
 
 const { GITHUB_REF } = process.env
 const currentBranch = GITHUB_REF.replace('refs/heads/', '')
