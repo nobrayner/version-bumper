@@ -8,7 +8,6 @@ This only supplies the next version - it is up to the user to use, and commit an
 
 ## Inputs
 
-- **Required** `github-token`: GitHub Token
 - **Optional** `version-file`: The file (and path) the current version number is stored in. Defaults to 'version.info'
 - **Optional** `branch`: The branch to retrieve the last version tag from. Defaults to the current branch
 - **Optional** `default-version`: The version number to use when the the current or released version cannot be found. Defaults to 0.0.0
@@ -31,8 +30,6 @@ Use the defaults
 
 - name: Version Bumper
   uses: nobrayner/version-bumper@v1
-  with:
-    github-token: ${{ secrets.github_token }}
 ```
 
 Overwrite everything
@@ -44,7 +41,6 @@ Overwrite everything
 - name: Version Bumper
   uses: nobrayner/version-bumper@v1
   with:
-    github-token: ${{ secrets.github_token }}
     version-file: './path/to/version.info'
     branch: 'master'
     default-version: '0.0.0'
@@ -62,8 +58,6 @@ Update version.info, npm front-end, and backend file and commit
 - name: Version Bumper
   id: version-bump
   uses: nobrayner/version-bumper@v1
-  with:
-    github-token: ${{ secrets.github_token }}
 
 - name: Update Version and Commit
   if: ${{ steps.version-bump.outputs.new-version }}

@@ -3,10 +3,6 @@ description: 'A GitHub action to manage SemVer versioning in a platform agnostic
 author: 'Braydon Hall'
 
 inputs:
-  github-token:
-    description: 'GitHub Token'
-    required: true
-
   version-file:
     description: 'The file (and path) the current version number is stored in'
     required: false

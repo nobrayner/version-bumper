@@ -3,14 +3,11 @@ const exec = require('@actions/exec')
 const fs = require('fs')
 const semver = require('semver')
 
-const { GITHUB_REPOSITORY, GITHUB_REF } = process.env
+const { GITHUB_REF } = process.env
 const currentBranch = GITHUB_REF.replace('refs/heads/', '')
 
 async function run() {
   try {
-    const githubToken = core.getInput('github-token', { required: true })
-    core.setSecret(githubToken)
-
     const versionFile = core.getInput('version-file')
     const inputBranch = core.getInput('branch')
     const defaultVersion = core.getInput('default-version')
@@ -36,9 +33,6 @@ async function run() {
     if (buildNumber) {
       core.info(`Using "${buildNumber}" as the build number`)
     }
-
-    // Set origin
-    await git(`remote set-url origin https://x-access-token:${githubToken}@github.com/${GITHUB_REPOSITORY}.git`)
 
     // Get all tags
     await git('fetch --all --tags')
