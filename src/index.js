@@ -1,16 +1,13 @@
 const core = require('@actions/core')
-const exec = require('@actions/exec')
 const fs = require('fs')
 const semver = require('semver')
-
-const { GITHUB_REF } = process.env
-const currentBranch = GITHUB_REF.replace('refs/heads/', '')
+const git = requite('./helpers/git')
 
 async function run() {
   try {
     const versionFile = core.getInput('version-file')
     const inputBranch = core.getInput('branch')
-    const defaultVersion = core.getInput('default-version')
+    const inputDefaultVersion = core.getInput('default-version')
     const bump = core.getInput('bump')
     const isPreBump = /pre(major|minor|patch|release)/.test(bump)
     const prereleaseText = core.getInput('prerelease-text')
@@ -21,86 +18,113 @@ async function run() {
       useBranch = currentBranch
     }
     const branch = useBranch
-    
-    core.info(`Using "${versionFile}" as the version file`)
-    core.info(`Using "${branch}" as production branch`)
-    core.info(`Using "${defaultVersion}" as the default version`)
-    core.info(`Using "${bump}" as bump`)
+
+    core.info(`Using '${versionFile}' as the version file`)
+    core.info(`Using '${branch}' as the branch`)
+
+    let useDefaultVersion = semver.clean(inputDefaultVersion)
+    if (!useDefaultVersion) {
+      core.setFailed(`Provided default version is not in a valid format: ${inputDefaultVersion}`)
+    }
+    const defaultVersion = useDefaultVersion
+    core.info(`Using '${defaultVersion}' as the default version`)
 
     if (isPreBump && prereleaseText) {
-      core.info(`Using "${prereleaseText}" as the pre-release text`)
+      core.info(`Using '${prereleaseText}' as the pre-release text`)
     }
     if (buildNumber) {
-      core.info(`Using "${buildNumber}" as the build number`)
+      core.info(`Using '${buildNumber}' as the build number`)
     }
 
-    // Get all tags
-    await git('fetch --all --tags')
+    core.info('===================')
 
-    // Get latest version tag from prodBranch as 'releasedVersion'
+    core.info('Fetching all tags from the repo...')
+    await git.fetchTags()
+
+    core.info('Getting release version from tags...')
     let releasedVersion = ''
 
     try {
-      let latestTag = await git(`describe --tags --abbrev=0 ${branch}`)
+      let latestTag = await git.describeTags(branch)
       releasedVersion = semver.clean(latestTag)
-    } catch (error) { }
-
-    if (!releasedVersion) {
-      core.warning('Unable to find the latest release version. Using the default version')
-      releasedVersion = defaultVersion
+    } catch (e) {
+      core.warning('Unable to get the released version from tags!')
     }
 
-    // Read version file, and semver.clean it as 'currentVersion'
-    // If it doesn't exist, use defaultVersion
+    core.info(`Getting current version from '${versionFile}'...`)
     let noCurrentVersion = true
+    let noCurrentVersionReason = ''
 
-    let originalCurrentVersion = ''
     let currentVersion = ''
 
     if (fs.existsSync(versionFile)) {
-      originalCurrentVersion = fs.readFileSync(versionFile, 'utf8')
+      let dirtyVersion = fs.readFileSync(versionFile, 'utf8')
 
-      let cleanVersion = semver.clean(originalCurrentVersion)
+      let currentVersionObj = semver.parse(dirtyVersion)
 
-      if (cleanVersion) {
-        currentVersion = cleanVersion
+      if (currentVersionObj) {
+        core.info(`Found the current version '${currentVersionObj.raw}'`)
+
+        let buildString = currentVersionObj.build.join('.')
+
+        if (buildString) {
+          buildString = '+' + buildString
+        }
+
+        currentVersion = currentVersionObj.version + buildString
         noCurrentVersion = false
+      } else {
+        noCurrentVersionReason = 'Unable to obtain valid semver version from version file.'
       }
+    } else {
+      noCurrentVersionReason = `Unable to find file '${versionFile}.'`
     }
 
     if (noCurrentVersion) {
-      core.warning('Unable to find the current version. Using the default version')
+      core.warning(`${noCurrentVersionReason} Using the default version '${defaultVersion}'`)
+
       currentVersion = defaultVersion
-      originalCurrentVersion = 'v' + defaultVersion
     }
 
     // If currentVersion <= releasedVersion
     // Bump version using semver package: bump, prereleaseText (if applicable)
     // Append buildNumber
-    let newVersion = 'v'
+    let newVersion = $`v${currentVersion}`
     let hasNewVersion = true
 
-    if (semver.lte(currentVersion, releasedVersion)) {
-      newVersion += semver.inc(releasedVersion, bump, prereleaseText)
-      
-      if (buildNumber) {
-        newVersion += `+${buildNumber}`
+    core.info(`Comparing current version '${currentVersion}' to released version '${releasedVersion}'...`)
+    if (!releasedVersion) {
+      if (semver.gt(currentVersion, defaultVersion)) {
+        hasNewVersion = false
       }
-
-      core.info(`New Version: ${newVersion}`)
     } else {
-      if (semver.valid(semver.clean(originalCurrentVersion))) {
-        var semverObj = semver.parse(originalCurrentVersion)
+      if (semver.lte(currentVersion, releasedVersion)) {
+        newVersion = 'v' + semver.inc(releasedVersion, bump, prereleaseText)
 
-        if (buildNumber && (!semverObj.build || (semverObj.build && buildNumber > semverObj.build))) {
-          core.info('Updating build number')
-          newVersion = semver.clean(originalCurrentVersion) + `+${buildNumber}`
+        if (buildNumber) {
+          newVersion += `+${buildNumber}`
+        }
+      } else {
+        if (buildNumber) {
+          let semverObj = semver.parse(currentVersion)
+
+          if (semverObj.build.join('.') !== buildNumber) {
+            core.info('Updating build number...')
+
+            newVersion = 'v' + semverObj.version + `+${buildNumber}`
+          } else {
+            hasNewVersion = false
+          }
         } else {
-          core.info('There is no new version')
-          newVersion = originalCurrentVersion
           hasNewVersion = false
         }
       }
+    }
+
+    if (hasNewVersion) {
+      core.info(`New Version: ${newVersion}`)
+    } else {
+      core.info('There is no new version')
     }
 
     // Output new version number 
@@ -112,29 +136,3 @@ async function run() {
 }
 
 run()
-
-function git(command) {
-  return new Promise(async (resolve, reject) => {
-    let output = ''
-    let error = ''
-
-    const options = {
-      listeners: {
-        stdout: (data) => {
-          output += data.toString()
-        },
-        stderr: (data) => {
-          error += data.toString()
-        }
-      }
-    }
-
-    try {
-      await exec.exec(`git ${command}`, undefined, options)
-
-      resolve(output)
-    } catch (e) {
-      reject(e)
-    }
-  })
-}

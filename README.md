@@ -8,6 +8,7 @@ This only supplies the next version - it is up to the user to use, and commit an
 
 ## Inputs
 
+- **Required** `github-token`: GitHub Token
 - **Optional** `version-file`: The file (and path) the current version number is stored in. Defaults to 'version.info'
 - **Optional** `branch`: The branch to retrieve the last version tag from. Defaults to the current branch
 - **Optional** `default-version`: The version number to use when the the current or released version cannot be found. Defaults to 0.0.0
@@ -25,22 +26,19 @@ This only supplies the next version - it is up to the user to use, and commit an
 Use the defaults
 
 ```yaml
-- name: Checkout
-  uses: actions/checkout@v2
-
 - name: Version Bumper
   uses: nobrayner/version-bumper@v1
+  with:
+    github-token: ${{ secrets.github_token }}
 ```
 
 Overwrite everything
 
 ```yaml
-- name: Checkout
-  uses: actions/checkout@v2
-
 - name: Version Bumper
   uses: nobrayner/version-bumper@v1
   with:
+    github-token: ${{ secrets.github_token }}
     version-file: './path/to/version.info'
     branch: 'master'
     default-version: '0.0.0'
@@ -52,12 +50,11 @@ Overwrite everything
 Update version.info, npm front-end, and backend file and commit
 
 ```yaml
-- name: Checkout
-  uses: actions/checkout@v2
-
 - name: Version Bumper
   id: version-bump
   uses: nobrayner/version-bumper@v1
+  with:
+    github-token: ${{ secrets.github_token }}
 
 - name: Update Version and Commit
   if: ${{ steps.version-bump.outputs.new-version }}
@@ -65,6 +62,7 @@ Update version.info, npm front-end, and backend file and commit
     echo ${{ steps.version-bump.outputs.version }} > version.info
     cd web-app && npm version --git-tag-version=false ${{ steps.version-bump.outputs.version }}
     cd ../api && echo ${{ steps.version-bump.outputs.version }} > VERSION
+    cd ..
     git config user.email version-bumper@github.com
     git config user.name ${{ github.actor }}
     git add .
