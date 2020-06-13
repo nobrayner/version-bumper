@@ -92,7 +92,7 @@ async function run() {
     // If currentVersion <= releasedVersion
     // Bump version using semver package: bump, prereleaseText (if applicable)
     // Append buildNumber
-    let newVersion = $`v${currentVersion}`
+    let newVersion = `v${currentVersion}`
     let hasNewVersion = true
 
     core.info(`Comparing current version '${currentVersion}' to released version '${releasedVersion}'...`)
