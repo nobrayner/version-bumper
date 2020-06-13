@@ -41,6 +41,9 @@ async function run() {
 
     core.info('===================')
 
+    core.info('Pulling all history...')
+    await git.pull()
+
     core.info('Fetching all tags from the repo...')
     await git.fetchTags()
 

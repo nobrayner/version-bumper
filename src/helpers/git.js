@@ -45,7 +45,10 @@ module.exports = new (class Git {
     this.exec(`pull${unshallow}`)
   }
 
-  fetchTags = () => this.exec(`fetch --all --tags`)
+  fetchTags = () => {
+    let unshallow = (isShallow ? '' : ' --unshallow')
+    this.exec(`fetch --all --tags${unshallow}`)
+  }
 
   describeTags = (commitish) => this.exec(`describe --tags --abbrev=0 ${commitish}`)
 
