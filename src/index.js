@@ -64,7 +64,7 @@ async function run() {
       let dirtyVersion = fs.readFileSync(versionFile, 'utf8')
       core.info(`Extracted '${dirtyVersion}' from version file`)
 
-      let currentVersionObj = semver.parse(dirtyVersion)
+      let currentVersionObj = semver.parse(dirtyVersion.trim())
 
       if (currentVersionObj) {
         core.info(`Found the current version '${currentVersionObj.raw}'`)
