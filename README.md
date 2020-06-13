@@ -19,6 +19,7 @@ This only supplies the next version - it is up to the user to use, and commit an
 ## Outputs
 
 - `version`: The version post-bump
+- `new-version`: Whether or not a new version was output
 
 ## Example usage
 
