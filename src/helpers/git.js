@@ -41,12 +41,12 @@ module.exports = new (class Git {
   revParse = (args) => this.exec(`rev-parse ${args.join(' ')}`)
 
   pull = () => {
-    let unshallow = (isShallow ? '' : ' --unshallow')
+    let unshallow = (this.isShallow ? '' : ' --unshallow')
     this.exec(`pull${unshallow}`)
   }
 
   fetchTags = () => {
-    let unshallow = (isShallow ? '' : ' --unshallow')
+    let unshallow = (this.isShallow ? '' : ' --unshallow')
     this.exec(`fetch --all --tags${unshallow}`)
   }
 
