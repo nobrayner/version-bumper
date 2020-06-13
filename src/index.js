@@ -62,6 +62,7 @@ async function run() {
 
     if (fs.existsSync(versionFile)) {
       let dirtyVersion = fs.readFileSync(versionFile, 'utf8')
+      core.info(`Extracted '${dirtyVersion}' from version file`)
 
       let currentVersionObj = semver.parse(dirtyVersion)
 

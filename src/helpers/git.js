@@ -34,7 +34,7 @@ module.exports = new (class Git {
     }
   })
 
-  fetchTags = () => this.exec(`fetch --all --tags`)
+  fetchTags = () => this.exec(`fetch --all --tags --unshallow`)
 
   describeTags = (commitish) => this.exec(`describe --tags --abbrev=0 ${commitish}`)
 
