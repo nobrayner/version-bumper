@@ -12,8 +12,8 @@ inputs:
     required: false
     default: 'version.info'
     
-  branch:
-    description: 'The branch to retrieve the last version tag from. Defaults to the current branch'
+  production-branch:
+    description: 'The branch to retrieve the last released version tag from. Defaults to the current branch'
     required: false
     
   default-version:

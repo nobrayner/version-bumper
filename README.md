@@ -10,7 +10,7 @@ This only supplies the next version - it is up to the user to use, and commit an
 
 - **Required** `github-token`: GitHub Token
 - **Optional** `version-file`: The file (and path) the current version number is stored in. Defaults to 'version.info'
-- **Optional** `branch`: The branch to retrieve the last version tag from. Defaults to the current branch
+- **Optional** `production-branch`: The branch to retrieve the last released version tag from. Defaults to the current branch
 - **Optional** `default-version`: The version number to use when the the current or released version cannot be found. Defaults to 0.0.0
 - **Optional** `bump`: What to bump: major, minor, patch, premajor, preminor, prepatch, or prerelease. Defaults to patch
 - **Optional** `prerelease-text`: The pre-release text to add to a pre* bump - e.g. "alpha". Only applies to: premajor, preminor, prepatch, or prerelease
@@ -40,7 +40,7 @@ Overwrite everything
   with:
     github-token: ${{ secrets.github_token }}
     version-file: './path/to/version.info'
-    branch: 'master'
+    production-branch: 'master'
     default-version: '0.0.0'
     bump: 'preminor'
     prerelease-text: 'dev'
