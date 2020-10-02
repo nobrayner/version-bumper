@@ -7,7 +7,7 @@
   "author": "Braydon Hall <40751395+nobrayner@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
     "semver": "^7.3.2"
   }
